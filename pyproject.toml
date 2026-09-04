@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mdforge"
+version = "0.1.0"
+description = "Desktop and CLI tool to convert common documents to Markdown."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "python-docx>=1.2.0",
+  "python-pptx>=1.0.2",
+  "pypdf>=6.16.2",
+  "beautifulsoup4>=4.13.0",
+  "markdownify>=1.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4",
+  "ruff>=0.12",
+  "pyinstaller>=6.22",
+]
+
+[project.scripts]
+mdforge = "mdforge.cli:main"
+mdforge-gui = "mdforge.gui:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
