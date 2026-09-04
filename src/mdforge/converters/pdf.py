@@ -1,5 +1,7 @@
 from pathlib import Path
+
 from pypdf import PdfReader
+
 from .base import Converter
 
 

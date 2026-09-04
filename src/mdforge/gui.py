@@ -1,6 +1,7 @@
-from pathlib import Path
 import tkinter as tk
+from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
+
 from .models import ConversionOptions
 from .service import ConversionService
 

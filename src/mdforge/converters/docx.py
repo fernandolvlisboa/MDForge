@@ -1,10 +1,12 @@
 from pathlib import Path
+
 from docx import Document
 from docx.document import Document as _Document
-from docx.table import Table
-from docx.text.paragraph import Paragraph
 from docx.oxml.table import CT_Tbl
 from docx.oxml.text.paragraph import CT_P
+from docx.table import Table
+from docx.text.paragraph import Paragraph
+
 from .base import Converter
 
 
