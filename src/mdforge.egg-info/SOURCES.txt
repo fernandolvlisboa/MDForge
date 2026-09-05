@@ -19,4 +19,5 @@ src/mdforge/converters/html.py
 src/mdforge/converters/pdf.py
 src/mdforge/converters/pptx.py
 src/mdforge/converters/text.py
+src/mdforge/converters/xlsx.py
 tests/test_service.py

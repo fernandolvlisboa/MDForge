@@ -11,13 +11,26 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("-o", "--output", type=Path, default=Path("markdown-output"))
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--no-source-header", action="store_true")
+    parser.add_argument(
+        "--name",
+        help="Nome do arquivo Markdown de saída (aplica-se apenas a um único arquivo).",
+    )
+    parser.add_argument(
+        "--sheet",
+        help="Nome da aba a converter em arquivos Excel (.xlsx/.xlsm). Padrão: todas.",
+    )
     return parser
 
 
 def main() -> int:
     args = build_parser().parse_args()
     service = ConversionService()
-    options = ConversionOptions(not args.no_source_header, args.overwrite)
+    options = ConversionOptions(
+        include_source_header=not args.no_source_header,
+        overwrite=args.overwrite,
+        output_name=args.name,
+        sheet_name=args.sheet,
+    )
     results = service.convert_many(args.files, args.output, options)
     for result in results:
         mark = "OK" if result.success else "ERRO"

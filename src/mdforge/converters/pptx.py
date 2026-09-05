@@ -1,14 +1,18 @@
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from pptx import Presentation
 
 from .base import Converter
 
+if TYPE_CHECKING:
+    from ..models import ConversionOptions
+
 
 class PptxConverter(Converter):
     extensions = (".pptx",)
 
-    def convert(self, source: Path) -> str:
+    def convert(self, source: Path, options: "ConversionOptions | None" = None) -> str:
         prs = Presentation(str(source))
         out: list[str] = []
         for index, slide in enumerate(prs.slides, start=1):
