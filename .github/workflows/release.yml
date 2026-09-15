@@ -1,0 +1,53 @@
+name: Release
+
+# Gera o executável do MDForge e publica na aba Releases do GitHub.
+# Dispare criando uma tag "v*" (ex.: v0.1.0) ou manualmente em Actions.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Testes
+        run: pytest
+
+      - name: Lint
+        run: ruff check src tests
+
+      - name: Build do executável
+        run: pyinstaller --noconfirm --clean MDForge.spec
+
+      - name: Publicar artefato do build
+        uses: actions/upload-artifact@v4
+        with:
+          name: MDForge-windows
+          path: dist/MDForge.exe
+          if-no-files-found: error
+
+      - name: Publicar release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/MDForge.exe
+          generate_release_notes: true

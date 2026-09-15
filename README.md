@@ -103,6 +103,24 @@ dist\MDForge.exe
 
 O build está configurado como `--onefile --windowed`, portanto o usuário final recebe um único `.exe` e não abre uma janela de console.
 
+## Publicar uma release
+
+O executável é gerado e publicado automaticamente na aba **Releases** do GitHub
+pelo workflow `.github/workflows/release.yml`. Para lançar uma versão:
+
+```powershell
+# 1. Atualize a versão em pyproject.toml, se necessário.
+# 2. Crie e envie a tag correspondente:
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Ao receber uma tag `v*`, o GitHub Actions roda os testes e o lint no Windows,
+gera o `MDForge.exe` e cria uma release com o `.exe` anexado e notas geradas
+automaticamente. Também é possível disparar o workflow manualmente em
+**Actions → Release → Run workflow** (nesse caso apenas o artefato de build é
+publicado, sem criar release).
+
 ## Decisões do MVP
 
 - **Tkinter:** vem com Python e reduz dependências/complexidade do empacotamento.
