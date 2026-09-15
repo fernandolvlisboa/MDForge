@@ -39,4 +39,8 @@ pythonpath = ["src"]
 line-length = 100
 
 [tool.ruff.lint.per-file-ignores]
+# Exceções amplas são intencionais nesses módulos: o service reporta qualquer
+# falha de conversão como ConversionResult, e a GUI degrada graciosamente
+# quando dependências opcionais (tkinterdnd2) ou leitura de arquivos falham.
 "src/mdforge/service.py" = ["BLE001"]
+"src/mdforge/gui.py" = ["BLE001"]
