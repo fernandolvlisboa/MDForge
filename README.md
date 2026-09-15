@@ -59,7 +59,7 @@ ou:
 python -m mdforge.gui
 ```
 
-Na interface você pode **arrastar e soltar** arquivos na lista, **remover** itens selecionados, definir um **nome de saída** personalizado (quando há apenas um arquivo) e, para planilhas Excel, **escolher a aba** a converter. O arrastar-e-soltar usa o pacote `tkinterdnd2`; sem ele, a interface continua funcionando via botão "Adicionar arquivos".
+Na interface você pode **arrastar e soltar** arquivos na lista, **remover** itens selecionados, definir um **nome de saída** personalizado (quando há apenas um arquivo) e, para planilhas Excel, **escolher a aba** a converter. Durante a conversão, uma **barra de progresso** acompanha o andamento arquivo a arquivo, com o processamento rodando em uma thread separada para não travar a janela. O arrastar-e-soltar usa o pacote `tkinterdnd2`; sem ele, a interface continua funcionando via botão "Adicionar arquivos".
 
 ## CLI
 
@@ -133,11 +133,11 @@ publicado, sem criar release).
 
 1. ~~Drag & drop e remoção individual de arquivos.~~ ✅
 2. ~~Nome de saída personalizado e seleção de aba em Excel.~~ ✅
-3. Preview do Markdown antes de salvar.
-4. Conversão recursiva de pastas.
-5. Preservação melhor de hyperlinks/imagens em DOCX/PPTX.
-6. OCR opcional para PDF escaneado.
-7. Barra de progresso e conversão em worker thread.
+3. ~~Barra de progresso e conversão em worker thread.~~ ✅
+4. Preview do Markdown antes de salvar.
+5. Conversão recursiva de pastas.
+6. Preservação melhor de hyperlinks/imagens em DOCX/PPTX.
+7. OCR opcional para PDF escaneado.
 8. Preferências persistentes.
 9. Ícone, version info, instalador MSI/Inno Setup e assinatura de código.
 

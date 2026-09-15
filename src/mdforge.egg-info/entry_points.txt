@@ -1,3 +1,0 @@
-[console_scripts]
-mdforge = mdforge.cli:main
-mdforge-gui = mdforge.gui:main
