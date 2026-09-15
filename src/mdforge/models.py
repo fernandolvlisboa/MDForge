@@ -6,6 +6,8 @@ from pathlib import Path
 class ConversionOptions:
     include_source_header: bool = True
     overwrite: bool = False
+    output_name: str | None = None
+    sheet_name: str | None = None
 
 
 @dataclass(slots=True)

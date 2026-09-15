@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from docx import Document
 from docx.document import Document as _Document
@@ -8,6 +9,9 @@ from docx.table import Table
 from docx.text.paragraph import Paragraph
 
 from .base import Converter
+
+if TYPE_CHECKING:
+    from ..models import ConversionOptions
 
 
 def _iter_blocks(parent: _Document):
@@ -35,7 +39,7 @@ def _table_to_md(table: Table) -> str:
 class DocxConverter(Converter):
     extensions = (".docx",)
 
-    def convert(self, source: Path) -> str:
+    def convert(self, source: Path, options: "ConversionOptions | None" = None) -> str:
         doc = Document(str(source))
         out: list[str] = []
         for block in _iter_blocks(doc):

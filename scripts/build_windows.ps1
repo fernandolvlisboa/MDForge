@@ -12,16 +12,6 @@ pytest
 
 ruff check src tests
 
-pyinstaller `
-    --noconfirm `
-    --clean `
-    --windowed `
-    --onefile `
-    --name MDForge `
-    --paths src `
-    --collect-all docx `
-    --collect-all pptx `
-    --collect-all pypdf `
-    launcher_gui.py
+pyinstaller --noconfirm --clean MDForge.spec
 
 Write-Host "Build concluído: dist\MDForge.exe"
