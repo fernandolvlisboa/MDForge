@@ -1,4 +1,7 @@
+import queue
+import threading
 import tkinter as tk
+from dataclasses import replace
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
@@ -31,6 +34,7 @@ class MdForgeApp(tk.Tk):
         self.sheet_name = tk.StringVar(value=_ALL_SHEETS)
         self.overwrite = tk.BooleanVar(value=False)
         self.source_header = tk.BooleanVar(value=True)
+        self._converting = False
         self._dnd_enabled = self._enable_dnd()
         self._build_ui()
 
@@ -94,9 +98,13 @@ class MdForgeApp(tk.Tk):
         ttk.Checkbutton(options, text="Sobrescrever existentes", variable=self.overwrite).pack(side="left")
         ttk.Checkbutton(options, text="Incluir comentário com arquivo-fonte", variable=self.source_header).pack(side="left", padx=14)
 
+        self.progress = ttk.Progressbar(root, mode="determinate", maximum=100)
+        self.progress.pack(fill="x", pady=(0, 8))
+
         action = ttk.Frame(root)
         action.pack(fill="x")
-        ttk.Button(action, text="Converter", command=self.convert).pack(side="right")
+        self.convert_btn = ttk.Button(action, text="Converter", command=self.convert)
+        self.convert_btn.pack(side="right")
         self.status = ttk.Label(action, text="Pronto.")
         self.status.pack(side="left")
 
@@ -178,6 +186,8 @@ class MdForgeApp(tk.Tk):
         self._set_sheet_row_visible(True)
 
     def convert(self):
+        if self._converting:
+            return
         if not self.files:
             messagebox.showinfo("MDForge", "Adicione pelo menos um arquivo.")
             return
@@ -188,7 +198,53 @@ class MdForgeApp(tk.Tk):
             output_name=self.output_name.get().strip() or None,
             sheet_name=None if sheet in ("", _ALL_SHEETS) else sheet,
         )
-        results = self.service.convert_many(self.files, Path(self.output_dir.get()), options)
+        files = list(self.files)
+        output_dir = Path(self.output_dir.get())
+        # Nome fixo só vale para um arquivo; com vários causaria colisão de destino.
+        if options.output_name and len(files) > 1:
+            options = replace(options, output_name=None)
+
+        self._converting = True
+        self.convert_btn.config(state="disabled")
+        self.progress.config(maximum=len(files), value=0)
+        self.status.config(text=f"Convertendo... 0/{len(files)}")
+
+        # A thread só publica eventos na fila; toda atualização de UI acontece na
+        # thread principal via _poll_progress, evitando chamadas Tk fora dela.
+        self._queue: queue.Queue = queue.Queue()
+        worker = threading.Thread(
+            target=self._run_conversion, args=(files, output_dir, options), daemon=True
+        )
+        worker.start()
+        self.after(50, self._poll_progress)
+
+    def _run_conversion(self, files: list[Path], output_dir: Path, options: ConversionOptions):
+        results = []
+        for index, source in enumerate(files, start=1):
+            result = self.service.convert_file(source, output_dir, options)
+            results.append(result)
+            self._queue.put(("progress", index, len(files), source.name))
+        self._queue.put(("done", results))
+
+    def _poll_progress(self):
+        try:
+            while True:
+                event = self._queue.get_nowait()
+                if event[0] == "progress":
+                    _, done, total, name = event
+                    self.progress.config(value=done)
+                    self.status.config(text=f"Convertendo... {done}/{total} ({name})")
+                elif event[0] == "done":
+                    self._on_conversion_done(event[1])
+                    return
+        except queue.Empty:
+            pass
+        self.after(50, self._poll_progress)
+
+    def _on_conversion_done(self, results: list):
+        self._converting = False
+        self.convert_btn.config(state="normal")
+        self.progress.config(value=self.progress.cget("maximum"))
         ok = sum(r.success for r in results)
         failed = len(results) - ok
         self.status.config(text=f"{ok} convertido(s), {failed} falha(s).")
