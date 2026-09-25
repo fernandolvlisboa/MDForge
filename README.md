@@ -9,8 +9,8 @@ MDForge é um conversor local de documentos para Markdown, com interface desktop
 | `.txt` / `.md` | ✅ | Texto direto |
 | `.html` / `.htm` | ✅ | Conversão semântica para Markdown |
 | `.docx` | ✅ | Parágrafos, headings, listas e tabelas básicas |
-| `.pptx` | ✅ | Texto por slide |
-| `.pdf` | ✅ | Extração de texto; não faz OCR |
+| `.pptx` | ✅ | Texto por slide e tabelas nativas em Markdown |
+| `.pdf` | ✅ | Extração de texto e inferência de tabelas por layout; não faz OCR |
 | `.xlsx` / `.xlsm` | ✅ | Uma tabela Markdown por aba; permite escolher uma aba específica |
 
 > PDFs escaneados/imagem não são o foco deste MVP. OCR deve entrar como módulo opcional numa fase posterior.
@@ -143,4 +143,4 @@ publicado, sem criar release).
 
 ## Limitações conhecidas
 
-Conversão de documentos é heurística. Layouts complexos, caixas de texto, colunas, SmartArt, fórmulas, imagens e PDFs com posicionamento sofisticado podem perder estrutura. O objetivo deste MVP é gerar Markdown limpo e útil, não reproduzir fielmente o layout visual do arquivo original.
+Conversão de documentos é heurística. Layouts complexos, caixas de texto, colunas, SmartArt, fórmulas, imagens e PDFs com posicionamento sofisticado podem perder estrutura. Em PDFs, o MDForge usa alinhamento e espaçamento recorrentes para reconstruir tabelas; documentos sem estrutura visual consistente continuam como texto. O objetivo deste MVP é gerar Markdown limpo e útil, não reproduzir fielmente o layout visual do arquivo original.
