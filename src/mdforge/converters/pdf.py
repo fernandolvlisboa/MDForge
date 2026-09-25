@@ -172,7 +172,7 @@ def _fallback_with_pypdf(source: Path) -> str:
 class PdfConverter(Converter):
     extensions = (".pdf",)
 
-    def convert(self, source: Path, options: "ConversionOptions | None" = None) -> str:
+    def convert(self, source: Path, options: ConversionOptions | None = None) -> str:
         try:
             chunks: list[str] = []
             with pdfplumber.open(str(source)) as pdf:
@@ -182,5 +182,5 @@ class PdfConverter(Converter):
                         f"## Página {index}\n\n{text if text else '*Sem texto extraível.*'}"
                     )
             return "\n\n".join(chunks).strip() + "\n"
-        except Exception:
+        except Exception:  # noqa: BLE001 - fallback intencional para PDFs fora do layout suportado
             return _fallback_with_pypdf(source)
