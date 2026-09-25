@@ -9,6 +9,7 @@ from docx.table import Table
 from docx.text.paragraph import Paragraph
 
 from .base import Converter
+from .table import table_to_markdown
 
 if TYPE_CHECKING:
     from ..models import ConversionOptions
@@ -24,16 +25,8 @@ def _iter_blocks(parent: _Document):
 
 
 def _table_to_md(table: Table) -> str:
-    rows = [[cell.text.strip().replace("\n", " ") for cell in row.cells] for row in table.rows]
-    if not rows:
-        return ""
-    width = max(len(r) for r in rows)
-    rows = [r + [""] * (width - len(r)) for r in rows]
-    header = rows[0]
-    body = rows[1:]
-    lines = ["| " + " | ".join(header) + " |", "| " + " | ".join(["---"] * width) + " |"]
-    lines += ["| " + " | ".join(r) + " |" for r in body]
-    return "\n".join(lines)
+    rows = [[cell.text for cell in row.cells] for row in table.rows]
+    return table_to_markdown(rows, extract_caption=True)
 
 
 class DocxConverter(Converter):

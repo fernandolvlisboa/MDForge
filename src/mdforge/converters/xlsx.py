@@ -4,33 +4,16 @@ from typing import TYPE_CHECKING
 from openpyxl import load_workbook
 
 from .base import Converter
+from .table import table_to_markdown
 
 if TYPE_CHECKING:
     from ..models import ConversionOptions
 
 
-def _cell_to_text(value: object) -> str:
-    if value is None:
-        return ""
-    return str(value).strip().replace("\n", " ").replace("|", "\\|")
-
-
 def _sheet_to_md(worksheet) -> str:
-    rows = [
-        [_cell_to_text(cell) for cell in row]
-        for row in worksheet.iter_rows(values_only=True)
-    ]
-    rows = [r for r in rows if any(cell for cell in r)]
-    if not rows:
-        return "*Planilha vazia.*"
-
-    width = max(len(r) for r in rows)
-    rows = [r + [""] * (width - len(r)) for r in rows]
-    header = rows[0]
-    body = rows[1:]
-    lines = ["| " + " | ".join(header) + " |", "| " + " | ".join(["---"] * width) + " |"]
-    lines += ["| " + " | ".join(r) + " |" for r in body]
-    return "\n".join(lines)
+    rows = [list(row) for row in worksheet.iter_rows(values_only=True)]
+    markdown = table_to_markdown(rows)
+    return markdown or "*Planilha vazia.*"
 
 
 class XlsxConverter(Converter):
